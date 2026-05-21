@@ -1,0 +1,237 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title class="display-name">none</title>
+    <link id="dynamic-favicon" rel="icon" type="image/png" href="">
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&amp;family=DM+Mono:ital,wght@0,300;0,400;1,300&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Main CSS -->
+    <link href="style.css" rel="stylesheet" />
+  </head>
+  <body>
+    <canvas id="bg"></canvas>
+    <div class="stars-wrap" id="stars-wrap"></div>
+    <div class="conn-badge" id="conn-badge">
+      <div class="conn-dot"></div>
+      <span id="conn-text">connecting</span>
+    </div>
+    <div class="page">
+      <div class="wordmark"><span id="wordmark-name">none</span> / status</div>
+      <div class="grid">
+        <div class="card profile-card">
+          <div class="card-inner">
+            <div class="avatar-wrap">
+              <img alt="" class="avatar" id="avatar" src="" />
+              <img
+                alt=""
+                class="avatar-decoration"
+                id="avatar-decoration"
+                src=""
+              />
+              <div class="status-dot offline" id="status-dot"></div>
+            </div>
+            <div class="name-block">
+              <div class="display-name" id="display-name">—</div>
+              <div class="username-row">
+                <div class="username" id="username">loading...</div>
+                <div class="guild-tag" id="guild-tag" style="display: none">
+                  <img alt="" class="guild-badge" id="guild-badge" src="" />
+                  <span id="guild-tag-text"></span>
+                </div>
+              </div>
+              <div class="badges" id="badges"></div>
+            </div>
+            <div class="custom-status" id="custom-status">
+              <span>no status</span>
+            </div>
+            <div class="platform-row">
+              <div class="platform-chip" id="platform-desktop">
+                <i class="fas fa-desktop"></i> desktop
+              </div>
+              <div class="platform-chip" id="platform-mobile">
+                <i class="fas fa-mobile-alt"></i> mobile
+              </div>
+              <div class="platform-chip" id="platform-web">
+                <i class="fas fa-globe"></i> web
+              </div>
+            </div>
+            <div class="divider"></div>
+            <div class="kv-block" id="kv-block" style="display: none">
+              <div class="kv-label">dexxy</div>
+              <div class="kv-pairs" id="kv-pairs"></div>
+            </div>
+          </div>
+        </div>
+        <div class="right-col">
+          <div class="card spotify-card" id="spotify-card">
+            <div class="card-inner">
+              <div class="section-label" id="spotify-label">spotify</div>
+              <div id="spotify-content">
+                <div class="no-spotify">
+                  <i class="fab fa-spotify"></i>
+                  <span>not listening to anything</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card activities-card" id="activities-card">
+            <div class="card-inner">
+              <div class="section-label">activities</div>
+              <div id="activities-content">
+                <div class="no-activity">no active games</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="music-bar" id="music-bar">
+      <div class="music-visualizer">
+        <span></span><span></span><span></span><span></span> <span></span
+        ><span></span><span></span><span></span> <span></span><span></span
+        ><span></span><span></span>
+      </div>
+      <div class="music-cover" id="music-cover">
+        <div class="music-disc">
+          <img alt="" id="music-cover-img" src="" />
+          <div class="music-disc-center"></div>
+        </div>
+      </div>
+      <div class="music-info">
+        <div class="music-now">Now Playing</div>
+        <div class="music-bar-track" id="music-track">—</div>
+        <div class="music-progress" id="music-progress">
+          <div id="music-progress-fill"></div>
+          <div id="music-progress-thumb"></div>
+          <div id="music-time-tooltip">0:00</div>
+        </div>
+      </div>
+      <div class="music-controls">
+        <button class="music-btn" id="prev-btn" title="Previous">
+          <i class="fas fa-backward-step"></i>
+        </button>
+        <button class="music-btn play-main" id="play-btn" title="Play">
+          <i class="fas fa-play"></i>
+        </button>
+        <button class="music-btn" id="next-btn" title="Next">
+          <i class="fas fa-forward-step"></i>
+        </button>
+      </div>
+      <div class="music-volume">
+        <i class="fas fa-volume-low"></i>
+        <input
+          class="vol-slider"
+          id="vol-slider"
+          max="1"
+          min="0"
+          step="0.01"
+          type="range"
+          value="0.4"
+        />
+      </div>
+    </div>
+    <audio id="audio"></audio>
+    <!-- =========================
+     CHECK PROFILE MODAL
+========================= -->
+    <div class="uid-modal" id="uid-modal">
+      <div class="uid-modal-box">
+        <div class="uid-modal-top">
+          <div>
+            <h3>Check Discord Profile</h3>
+            <p>Enter Discord UID</p>
+          </div>
+          <button id="close-modal">
+            <i class="fas fa-xmark"></i>
+          </button>
+        </div>
+        <!-- SEARCH -->
+        <div class="uid-search-wrap">
+          <input
+            id="uid-input"
+            placeholder="example: 740796115452166154"
+            type="text"
+          />
+          <button id="uid-submit">Search</button>
+        </div>
+        <!-- HISTORY -->
+        <div id="uid-history"></div>
+        <!-- HELP BUTTON -->
+        <div class="uid-modal-footer">
+          <button id="uid-help-btn">
+            <i class="fas fa-circle-question"></i>
+            <span>Help</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- =========================
+     FLOATING MAIN BUTTON
+========================= -->
+    <div id="check-profile-btn">
+      <i class="fas fa-user-astronaut"></i>
+      <span>Check Profile</span>
+    </div>
+    <!-- =========================
+     HELP MODAL
+========================= -->
+    <div class="uid-help-modal" id="uid-help-modal">
+      <div class="uid-help-box">
+        <button id="close-help-modal">
+          <i class="fas fa-xmark"></i>
+        </button>
+        <div class="uid-help-header">
+          <div class="uid-help-icon">
+            <i class="fab fa-discord"></i>
+          </div>
+          <h2>How to Find Discord UID</h2>
+          <p>Follow these steps to get a Discord User ID</p>
+        </div>
+        <div class="uid-help-cards">
+          <div class="uid-help-card">
+            <div class="uid-help-card-icon">
+              <i class="fas fa-gear"></i>
+            </div>
+            <div>
+              <h3>Enable Developer Mode</h3>
+              <p>Settings → Advanced → enable Developer Mode</p>
+            </div>
+          </div>
+          <div class="uid-help-card">
+            <div class="uid-help-card-icon">
+              <i class="fas fa-user"></i>
+            </div>
+            <div>
+              <h3>Open Discord Profile</h3>
+              <p>Open the Discord profile you want to check</p>
+            </div>
+          </div>
+          <div class="uid-help-card">
+            <div class="uid-help-card-icon">
+              <i class="fas fa-copy"></i>
+            </div>
+            <div>
+              <h3>Copy User ID</h3>
+              <p>Right-click the profile → Copy User ID</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main JavaScript -->
+    <script src="script.js"></script>
+  </body>
+</html>
