@@ -228,30 +228,101 @@ canvas#bg {
   z-index: 3;
 }
 
+/* =========================
+   DISCORD STATUS DOT
+========================= */
+
 .status-dot {
   position: absolute;
   bottom: 2px;
   right: 2px;
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
-  border: 2.5px solid var(--bg);
-  background: var(--offline);
-  transition: background 0.3s ease;
-  z-index: 3;
+  border: 3px solid var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  z-index: 5;
+  transition:
+    background .25s ease,
+    transform .25s ease;
 }
 
+/* =========================
+   ONLINE
+========================= */
+
 .status-dot.online {
-  background: var(--online);
+  background: #3ecf8e;
 }
+
+/* =========================
+   IDLE (Moon)
+========================= */
+
 .status-dot.idle {
-  background: var(--idle);
+  background: #e8c547;
 }
+
+.status-dot.idle::before {
+  content: "";
+
+  position: absolute;
+
+  width: 10px;
+  height: 10px;
+
+  border-radius: 50%;
+
+  background: var(--bg);
+
+  top: 1px;
+  right: -1px;
+}
+
+/* =========================
+   DND
+========================= */
+
 .status-dot.dnd {
-  background: var(--dnd);
+  background: #f16060;
 }
+
+.status-dot.dnd::before {
+  content: "";
+
+  width: 9px;
+  height: 3px;
+
+  border-radius: 999px;
+
+  background: black;
+}
+
+/* =========================
+   OFFLINE
+========================= */
+
 .status-dot.offline {
-  background: var(--offline);
+  background: #80848e;
+}
+
+.status-dot.offline::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--bg);
+}
+
+/* =========================
+   HOVER EFFECT
+========================= */
+
+.avatar-wrap:hover .status-dot {
+  transform: scale(1.08);
 }
 
 .name-block {
@@ -1758,4 +1829,36 @@ canvas#bg {
   .custom-status {
     justify-content: flex-start;
   }
+}
+
+/* =========================
+   VISITOR COUNTER INLINE
+========================= */
+
+.conn-badge {
+  min-height: 28px;
+  padding: 6px 12px;
+  gap: 7px;
+  white-space: nowrap;
+}
+
+.conn-divider {
+  width: 1px;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.visitor-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  font-family: "DM Mono", monospace;
+  color: var(--text-muted);
+  line-height: 1;
+}
+
+.visitor-inline i {
+  font-size: 10px;
+  color: #8fdcff;
 }

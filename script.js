@@ -913,3 +913,34 @@ helpModal.addEventListener("click", (e) => {
     helpModal.classList.remove("active");
   }
 });
+
+/* =========================
+   VISITOR COUNTER
+========================= */
+
+async function updateVisitorCount() {
+  const counterEl = document.getElementById("visitor-count");
+
+  try {
+    const response = await fetch("/api/views");
+    const data = await response.json();
+
+    console.log("Visitor count:", data);
+    console.log("Counter data:", data.data);
+
+    counterEl.textContent =
+      data.data?.count ??
+      data.data?.up_count ??
+      data.data?.value ??
+      data.data?.amount ??
+      data.count ??
+      data.value ??
+      "0";
+
+  } catch (error) {
+    console.error("Visitor counter error:", error);
+    counterEl.textContent = "—";
+  }
+}
+
+updateVisitorCount();
