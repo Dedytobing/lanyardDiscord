@@ -148,32 +148,32 @@ function updatePrimaryGuild(user) {
   const playlist = [
     {
       title: "ABADI - Dendi Nata",
-      url: "",
+      url: "https://github.com/Dedytobing/lanyardDiscord/raw/refs/heads/main/music/dendi_nata-abadi_indo_version.mp3",
       cover: "https://i.scdn.co/image/ab67616d0000b2736ad512e3c83e1f6e7bf9a7a9",
     },
     {
       title: "Bahagia Lagi - Piche Kota",
-      url: "",
+      url: "https://github.com/Dedytobing/lanyardDiscord/raw/refs/heads/main/music/piche_kota-bahagia_lagi.mp3",
       cover: "https://i.scdn.co/image/ab67616d0000b2735bd00b369e89c5cbc74d827b",
     },
     {
       title: "Rabun Jauh - Bernadya",
-      url: "",
+      url: "https://github.com/Dedytobing/lanyardDiscord/raw/refs/heads/main/music/bernadya-rabun_jauh.mp3",
       cover: "https://yt3.googleusercontent.com/KKoXlJneZYhEmJGFM7_9hq3BQfYEKWMJkA-U_MPWRHG3vJ-ujvKKhgz8esbE_C-tEw3Cw32j1y9uUlY=w544-h544-l90-rj",
     },
     {
       title: "Disarankan Di Bandung - Dongker feat. Jason Ranti",
-      url: "",
+      url: "https://github.com/Dedytobing/lanyardDiscord/raw/refs/heads/main/music/Dongker_feat._Jason_Ranti-Disarankan_Di_Bandung.mp3",
       cover: "https://i.scdn.co/image/ab67616d0000b27335e8c95e427167c4d26899e1",
     },
     {
       title: "Sesi Potret - eńau feat. Ari Lesmana",
-      url: "",
+      url: "https://github.com/Dedytobing/lanyardDiscord/raw/refs/heads/main/music/enau-sesi_potret_feat_ari_lesmana.mp3",
       cover: "https://i.scdn.co/image/ab67616d0000b273172768978c7f929803ad7e8b",
     },
     {
       title: "Menerima Luka - Natasya Sabella",
-      url: "",
+      url: "https://github.com/Dedytobing/lanyardDiscord/raw/refs/heads/main/music/natasya_sabella-menerima_luka.mp3",
       cover: "https://yt3.googleusercontent.com/JQdY978-kJFhfITLrfraFGhYQxikHiaYBDs-Ly5Zjj9EufcJ8pZkOk-v1xwKNN8NCQ0BTXGj63_5F6-C=w544-h544-l90-rj",
     },
   ];
