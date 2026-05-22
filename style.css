@@ -193,6 +193,42 @@ canvas#bg {
 /* =========================================================
    PROFILE CARD
 ========================================================= */
+.profile-card {
+  position: relative;
+}
+
+.profile-banner {
+  width: 100%;
+  height: 92px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(32,137,189,.35),
+      rgba(143,220,255,.08)
+    );
+
+  background-size: cover;
+  background-position: center;
+
+  border-bottom: 1px solid var(--border);
+
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-banner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(10,11,15,.05),
+      rgba(10,11,15,.72)
+    );
+}
 
 .profile-card .card-inner {
   display: flex;
@@ -200,6 +236,10 @@ canvas#bg {
   align-items: center;
   text-align: center;
   gap: 12px;
+  padding-top: 0;
+  margin-top: -38px;
+  position: relative;
+  z-index: 2;
 }
 
 .avatar-wrap {

@@ -496,6 +496,7 @@ function updatePrimaryGuild(user) {
     if (!isVisible) return;
 
     const u = p.discord_user;
+    updateProfileBanner(u);
     const avatarURL = `https://cdn.discordapp.com/avatars/${UID}/${u.avatar}.png?size=128`;
     /* Avatar */
     const avatarEl = document.getElementById('avatar');
@@ -571,6 +572,46 @@ function updatePrimaryGuild(user) {
     }
     updateSpotify(p);
     updateActivities(p);
+  }
+
+  async function updateProfileBanner() {
+    const bannerEl = document.getElementById("profile-banner");
+  
+    if (!bannerEl) return;
+  
+    try {
+      const res = await fetch(`https://dcdn.dstn.to/profile/${UID}`);
+      const data = await res.json();
+  
+      const user = data.user || data;
+  
+      if (user.banner) {
+        const format = user.banner.startsWith("a_") ? "gif" : "png";
+  
+        bannerEl.style.backgroundImage =
+          `url(https://cdn.discordapp.com/banners/${UID}/${user.banner}.${format}?size=1024)`;
+  
+        return;
+      }
+  
+      if (user.banner_color) {
+
+        bannerEl.style.backgroundImage =
+          `linear-gradient(
+            135deg,
+            ${user.banner_color},
+            rgba(143,220,255,.08)
+          )`;
+  
+        return;
+      }
+  
+      bannerEl.style.backgroundImage =
+        `linear-gradient(135deg, rgba(32,137,189,.35), rgba(143,220,255,.08))`;
+  
+    } catch (err) {
+      console.error("Banner error:", err);
+    }
   }
 
   function updateSpotify(p) {
