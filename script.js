@@ -2,6 +2,7 @@
    CONFIG
 ========================================================= */
 let UID = "740796115452166154";
+const VOICE_API_BASE_URL = "https://discord-guardian-backend.vercel.app";
 /* =========================================================
    BACKGROUND: SHOOTING STARS
 ========================================================= */
@@ -572,6 +573,7 @@ function updatePrimaryGuild(user) {
     }
     updateSpotify(p);
     updateActivities(p);
+    updateVoiceConnection(UID);
   }
 
   async function updateProfileBanner() {
@@ -667,11 +669,24 @@ function updatePrimaryGuild(user) {
   }
 
   function updateActivities(p) {
-    const acts = p.activities.filter((a) => a.type === 0);
+    const acts = p.activities.filter(a =>
+      [0, 1, 2, 3, 5].includes(a.type) && a.name !== "Spotify"
+    );
     const container = $("activities-content");
     if (acts.length === 0) {
-      container.innerHTML = '<div class="no-activity">no active games</div>';
+      container.innerHTML = '<div class="no-activity">no activities</div>';
       return;
+    }
+
+    function getActivityTypeLabel(type) {
+      switch (type) {
+        case 0: return "Playing";
+        case 1: return "Streaming";
+        case 2: return "Listening";
+        case 3: return "Watching";
+        case 5: return "Competing";
+        default: return "Activity";
+      }
     }
 
     container.innerHTML = "";
@@ -693,17 +708,48 @@ function updatePrimaryGuild(user) {
            </div>`
         : "";
 
-      const el = document.createElement("div");
-      el.className = "activity-item";
+        const el = document.createElement("div");
+
+        let activityClass = "";
+        
+        switch (act.type) {
+          case 0:
+            activityClass = "playing";
+            break;
+        
+          case 1:
+            activityClass = "streaming";
+            break;
+        
+          case 2:
+            activityClass = "listening";
+            break;
+        
+          case 3:
+            activityClass = "watching";
+            break;
+        
+          case 5:
+            activityClass = "competing";
+            break;
+        
+          default:
+            activityClass = "default";
+        }
+        
+        el.className =
+          `activity-item ${activityClass}`;
+
       el.innerHTML = `
-        ${imgHTML}
-        <div class="activity-info">
-          <div class="activity-name">${act.name}</div>
-          ${act.details ? `<div class="activity-details">${act.details}</div>` : ""}
-          ${act.state ? `<div class="activity-state">${act.state}</div>` : ""}
-          ${elapsed}
-        </div>
-      `;
+      ${imgHTML}
+      <div class="activity-info">
+        <div class="activity-type">${getActivityTypeLabel(act.type)}</div>
+        <div class="activity-name">${act.name}</div>
+        ${act.details ? `<div class="activity-details">${act.details}</div>` : ""}
+        ${act.state ? `<div class="activity-state">${act.state}</div>` : ""}
+        ${elapsed}
+      </div>
+    `;
       container.appendChild(el);
 
       if (act.timestamps?.start) {
@@ -727,6 +773,242 @@ function updatePrimaryGuild(user) {
         }
       }
     });
+  }
+
+  function escapeHTML(value) {
+    return String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  function getInitial(value) {
+    if (!value) return "?";
+    return String(value).trim().charAt(0).toUpperCase();
+  }
+
+  function getGuildIconHTML(voice) {
+    const guildName = voice.guild_name || "Server";
+
+    if (voice.guild_icon_url) {
+      return `
+        <img 
+          class="voice-guild-icon" 
+          src="${escapeHTML(voice.guild_icon_url)}" 
+          alt="${escapeHTML(guildName)}"
+          onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';"
+        />
+        <div class="voice-guild-fallback" style="display:none;">
+          ${getInitial(guildName)}
+        </div>
+      `;
+    }
+
+    return `
+      <div class="voice-guild-fallback">
+        ${getInitial(guildName)}
+      </div>
+    `;
+  }
+
+  function getUserAvatarHTML(voice) {
+    const displayName =
+      voice.display_name ||
+      voice.global_name ||
+      voice.username ||
+      "User";
+  
+    if (voice.avatar_url) {
+      return `
+        <img
+          class="voice-member-avatar"
+          src="${escapeHTML(voice.avatar_url)}"
+          alt="${escapeHTML(displayName)}"
+          onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';"
+        />
+        <div class="voice-member-avatar-fallback" style="display:none;">
+          ${getInitial(displayName)}
+        </div>
+      `;
+    }
+  
+    return `
+      <div class="voice-member-avatar-fallback">
+        ${getInitial(displayName)}
+      </div>
+    `;
+  }
+
+  function renderVoiceEmpty(message = "not connected to voice") {
+    const content = $("voice-content");
+
+    if (!content) return;
+
+    content.innerHTML = `
+      <div class="no-voice">
+        <i class="fas fa-headphones"></i>
+        <span>${escapeHTML(message)}</span>
+      </div>
+    `;
+  }
+
+  function renderVoiceConnection(voiceUsers, allVoiceUsers = []) {
+    const content = $("voice-content");
+  
+    if (!content) return;
+  
+    if (!voiceUsers || voiceUsers.length === 0) {
+      renderVoiceEmpty();
+      return;
+    }
+  
+    content.innerHTML = "";
+  
+    voiceUsers.forEach((voice) => {
+      const item = document.createElement("div");
+      item.className = "voice-item voice-item-compact";
+  
+      const badges = [];
+  
+      if (voice.self_mute) badges.push("Mute");
+      if (voice.self_deaf) badges.push("Deaf");
+      if (voice.server_mute) badges.push("Server Mute");
+      if (voice.server_deaf) badges.push("Server Deaf");
+      if (voice.streaming) badges.push("Live");
+      if (voice.camera) badges.push("Cam");
+  
+      const channelMembers = allVoiceUsers.filter((member) => {
+        return (
+          String(member.guild_id) === String(voice.guild_id) &&
+          String(member.channel_id) === String(voice.channel_id)
+        );
+      });
+  
+      const visibleMembers = channelMembers.slice(0, 4);
+      const hiddenCount = Math.max(channelMembers.length - visibleMembers.length, 0);
+  
+      item.innerHTML = `
+        <div class="voice-compact-main">
+          <div class="voice-guild-wrap voice-guild-wrap-small">
+            ${getGuildIconHTML(voice)}
+          </div>
+  
+          <div class="voice-compact-info">
+            <div class="voice-compact-head">
+              <span class="voice-live-dot"></span>
+              <span>Connected Voice</span>
+            </div>
+  
+            <div class="voice-channel compact-text">
+              ${escapeHTML(voice.channel_name || "Unknown Voice Channel")}
+            </div>
+  
+            <div class="voice-server compact-muted">
+              ${escapeHTML(voice.guild_name || "Unknown Server")}
+            </div>
+          </div>
+        </div>
+  
+        <div class="voice-compact-bottom">
+          <div class="voice-members-compact">
+            ${visibleMembers
+              .map((member) => {
+                const displayName =
+                  member.display_name ||
+                  member.global_name ||
+                  member.username ||
+                  member.user_id ||
+                  "Unknown";
+  
+                if (member.avatar_url) {
+                  return `
+                    <img
+                      class="voice-member-mini"
+                      src="${escapeHTML(member.avatar_url)}"
+                      alt="${escapeHTML(displayName)}"
+                      title="${escapeHTML(displayName)}"
+                      onerror="this.style.display='none';"
+                    />
+                  `;
+                }
+  
+                return `
+                  <div
+                    class="voice-member-mini voice-member-mini-fallback"
+                    title="${escapeHTML(displayName)}"
+                  >
+                    ${getInitial(displayName)}
+                  </div>
+                `;
+              })
+              .join("")}
+  
+            ${
+              hiddenCount > 0
+                ? `<div class="voice-member-mini voice-member-more">+${hiddenCount}</div>`
+                : ""
+            }
+  
+            <span class="voice-member-count">
+            ${visibleMembers
+              .map((member) =>
+                escapeHTML(
+                  member.display_name ||
+                    member.global_name ||
+                    member.username ||
+                    "User"
+                )
+              )
+              .join(", ")}
+            ${hiddenCount > 0 ? `+${hiddenCount}` : ""}
+          </span>
+          </div>
+  
+          <div class="voice-badges-compact">
+            ${
+              badges.length > 0
+                ? badges.map((badge) => `<span>${escapeHTML(badge)}</span>`).join("")
+                : `<span>Normal</span>`
+            }
+          </div>
+        </div>
+      `;
+  
+      content.appendChild(item);
+    });
+  }
+
+  async function updateVoiceConnection(uid = UID) {
+    const content = $("voice-content");
+  
+    if (!content) {
+      console.warn("Element #voice-content tidak ditemukan di index.html");
+      return;
+    }
+  
+    try {
+      const voiceUrl = `${VOICE_API_BASE_URL}/api/discord/voice`;
+  
+      const response = await fetch(voiceUrl);
+      const result = await response.json();
+  
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || "failed to load voice data");
+      }
+  
+      const allVoiceUsers = Array.isArray(result.data) ? result.data : [];
+  
+      const matchedUsers = allVoiceUsers.filter((voice) => {
+        return String(voice.user_id) === String(uid);
+      });
+  
+      renderVoiceConnection(matchedUsers, allVoiceUsers);
+    } catch (error) {
+      console.error("Voice connection error:", error);
+      renderVoiceEmpty("voice api unavailable");
+    }
   }
 
   function connect() {
@@ -792,15 +1074,31 @@ function updatePrimaryGuild(user) {
 
   loadBadges();
   connect();
-
+  
+  updateVoiceConnection(UID);
+  
+  setInterval(() => {
+    updateVoiceConnection(UID);
+  }, 3000);
+  
   window.discordReconnect = () => {
     if (socket) socket.close();
-
+  
     loadBadges();
-
+  
+    updateVoiceConnection(UID);
+  
     connect();
   };
+  
+  window.updateVoiceConnectionByUID = (uid) => {
+    updateVoiceConnection(uid);
+  };
 })();
+
+/* =========================================================
+   CHECK PROFILE MODAL & UID HISTORY
+========================================================= */
 
 /* =========================================================
    CHECK PROFILE MODAL & UID HISTORY
@@ -865,6 +1163,10 @@ async function changeProfile(newUID) {
 
   window.discordReconnect();
 
+  if (typeof window.updateVoiceConnectionByUID === "function") {
+    window.updateVoiceConnectionByUID(UID);
+  }
+  
   modal.classList.remove("active");
 }
 
@@ -985,3 +1287,41 @@ async function updateVisitorCount() {
 }
 
 updateVisitorCount();
+
+/* =========================
+   THEME TOGGLE
+========================= */
+
+(function ThemeToggle() {
+  const themeBtn =
+    document.getElementById("theme-toggle");
+
+  if (!themeBtn) return;
+
+  const themeIcon =
+    themeBtn.querySelector("i");
+
+  const savedTheme =
+    localStorage.getItem("theme");
+
+  if (savedTheme === "light") {
+    document.body.classList.add("light-mode");
+    themeIcon.className = "fas fa-sun";
+  } else {
+    document.body.classList.remove("light-mode");
+    themeIcon.className = "fas fa-moon";
+  }
+
+  themeBtn.addEventListener("click", () => {
+    const isLight =
+      document.body.classList.toggle("light-mode");
+
+    localStorage.setItem(
+      "theme",
+      isLight ? "light" : "dark"
+    );
+
+    themeIcon.className =
+      isLight ? "fas fa-sun" : "fas fa-moon";
+  });
+})();

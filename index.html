@@ -18,21 +18,27 @@
     />
 
     <!-- Main CSS -->
+    <!-- <link href="style-rapi.css" rel="stylesheet" /> -->
     <link href="style.css" rel="stylesheet" />
   </head>
   <body>
     <canvas id="bg"></canvas>
     <div class="stars-wrap" id="stars-wrap"></div>
+
     <div class="conn-badge" id="conn-badge">
       <div class="conn-dot"></div>
-      <span id="conn-text">connecting</span>
-    
-      <div class="conn-divider"></div>
-    
+      <span id="conn-text">connecting</span>    
+      <div class="conn-divider"></div> 
+
       <div class="visitor-inline">
         <i class="fas fa-eye"></i>
         <span id="visitor-count">0</span>
       </div>
+    
+      <div class="conn-divider"></div>    
+      <button id="theme-toggle" class="theme-toggle" title="Toggle theme">
+        <i class="fas fa-moon"></i>
+      </button>
     </div>
     <div class="page">
       <div class="wordmark"><span id="wordmark-name">none</span> / status</div>
@@ -84,15 +90,11 @@
             </div>
           </div>
         </div>
-        <div class="right-col">
+        <div class="middle-col">
           <div class="card spotify-card" id="spotify-card">
             <div class="card-inner">
               <div class="section-label" id="spotify-label">spotify</div>
               <div id="spotify-content">
-                <div class="no-spotify">
-                  <i class="fab fa-spotify"></i>
-                  <span>not listening to anything</span>
-                </div>
               </div>
             </div>
           </div>
@@ -100,12 +102,26 @@
             <div class="card-inner">
               <div class="section-label">activities</div>
               <div id="activities-content">
-                <div class="no-activity">no active games</div>
+                <div class="no-activity">no activities</div>
+              </div>
+            </div>
+          </div>        
+        </div>
+        
+        <div class="card voice-card" id="voice-card">
+          <div class="card-inner">
+            <div class="section-label">voice connection</div>
+        
+            <div id="voice-content">
+              <div class="no-voice">
+                <i class="fas fa-headphones"></i>
+                <span>not connected to voice</span>
               </div>
             </div>
           </div>
-        </div>
+        </div>  
       </div>
+
     </div>
     <div class="music-bar" id="music-bar">
       <div class="music-visualizer">
@@ -174,7 +190,9 @@
             placeholder="example: 740796115452166154"
             type="text"
           />
-          <button id="uid-submit">Search</button>
+          <button id="uid-submit">
+            <i class="fas fa-search"></i>
+          </button>
         </div>
         <!-- HISTORY -->
         <div id="uid-history"></div>
